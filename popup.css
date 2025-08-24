@@ -1,0 +1,46 @@
+body {
+  width: 300px;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  background-color: #f5f9ff;
+  color: #333;
+}
+
+.logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  margin: 10px 0;
+  color: #2c3e50;
+}
+
+p {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 15px;
+}
+
+#startStudy {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#startStudy:hover {
+  background-color: #2980b9;
+}
+
+#status {
+  font-size: 13px;
+  color: #95a5a6;
+}
