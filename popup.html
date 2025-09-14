@@ -1,19 +1,640 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Study Buddy</title>
-  <img src="logo.png" alt="Study Buddy Logo" class="logo">
-  <link rel="stylesheet" href="popup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Buddy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 380px;
+            min-height: 500px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #718096;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .content {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            min-height: 380px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tasks Tab */
+        .task-input {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .task-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .task-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .task-list {
+            space: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .task-checkbox {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #a0aec0;
+        }
+
+        .delete-btn {
+            background: #fed7d7;
+            color: #c53030;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Timer Tab */
+        .timer-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .timer-time {
+            font-size: 48px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-mode {
+            font-size: 16px;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .timer-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn.start {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .timer-btn.pause {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .timer-btn.reset {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .timer-presets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .preset-btn {
+            padding: 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        /* Notes Tab */
+        .notes-area {
+            width: 100%;
+            height: 300px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .notes-area:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .notes-count {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        /* Stats Tab */
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <img src="" alt="" class="">
-    <h2>Study Buddy</h2>
-    <p>Stay focused. Block distractions.</p>
-    <button id="startStudy">Study Now (50 min)</button>
-    <p id="status">Ready to study?</p>
-  </div>
-  <script src="popup.js"></script>
+    <div class="header">
+        <h1>📚 Student Buddy</h1>
+        <p>Your productivity companion</p>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showTab('tasks')">Tasks</button>
+        <button class="nav-tab" onclick="showTab('timer')">Timer</button>
+        <button class="nav-tab" onclick="showTab('notes')">Notes</button>
+        <button class="nav-tab" onclick="showTab('stats')">Stats</button>
+    </div>
+
+    <div class="content">
+        <div id="tasks" class="tab-content active">
+            <div class="task-input">
+                <input type="text" id="taskInput" placeholder="Add a new task...">
+                <button class="add-btn" onclick="addTask()">Add</button>
+            </div>
+            <div class="task-list" id="taskList">
+                <!-- Tasks will be dynamically added here -->
+            </div>
+        </div>
+
+        <div id="timer" class="tab-content">
+            <div class="timer-display">
+                <div class="timer-time" id="timerDisplay">25:00</div>
+                <div class="timer-mode" id="timerMode">Focus Time</div>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-btn start" id="startBtn" onclick="toggleTimer()">Start</button>
+                <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+            </div>
+            <div class="timer-presets">
+                <button class="preset-btn" onclick="setTimer(25, 'Focus Time')">🎯 Focus (25m)</button>
+                <button class="preset-btn" onclick="setTimer(5, 'Short Break')">☕ Break (5m)</button>
+                <button class="preset-btn" onclick="setTimer(15, 'Long Break')">🌟 Long Break (15m)</button>
+                <button class="preset-btn" onclick="setTimer(50, 'Deep Work')">🔥 Deep Work (50m)</button>
+            </div>
+        </div>
+
+        <div id="notes" class="tab-content">
+            <textarea class="notes-area" id="notesArea" placeholder="Write your notes here..."></textarea>
+            <div class="notes-count" id="notesCount">0 characters</div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div class="stat-card">
+                <div class="stat-number" id="tasksCompleted">0</div>
+                <div class="stat-label">Tasks Completed</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="taskProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="studyTime">0</div>
+                <div class="stat-label">Minutes Studied</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="noteCount">0</div>
+                <div class="stat-label">Notes Written</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let tasks = [];
+        let timerInterval = null;
+        let currentTime = 25 * 60; // 25 minutes in seconds
+        let isRunning = false;
+        let currentMode = 'Focus Time';
+        let stats = {
+            tasksCompleted: 0,
+            studyTime: 0,
+            noteCount: 0
+        };
+
+        // Initialize the extension
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateTaskDisplay();
+            updateStatsDisplay();
+            setupNotesCounter();
+        });
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Task Management
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const taskText = input.value.trim();
+            
+            if (taskText) {
+                const task = {
+                    id: Date.now(),
+                    text: taskText,
+                    completed: false,
+                    createdAt: new Date()
+                };
+                
+                tasks.push(task);
+                input.value = '';
+                updateTaskDisplay();
+                saveData();
+            }
+        }
+
+        function toggleTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    stats.tasksCompleted++;
+                } else {
+                    stats.tasksCompleted--;
+                }
+                updateTaskDisplay();
+                updateStatsDisplay();
+                saveData();
+            }
+        }
+
+        function deleteTask(taskId) {
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            if (taskIndex > -1) {
+                if (tasks[taskIndex].completed) {
+                    stats.tasksCompleted--;
+                }
+                tasks.splice(taskIndex, 1);
+                updateTaskDisplay();
+                updateStatsDisplay();
+                saveData();
+            }
+        }
+
+        function updateTaskDisplay() {
+            const taskList = document.getElementById('taskList');
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <p>No tasks yet. Add one above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            taskList.innerHTML = tasks.map(task => `
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask(${task.id})">
+                    <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Timer functionality
+        function setTimer(minutes, mode) {
+            currentTime = minutes * 60;
+            currentMode = mode;
+            document.getElementById('timerMode').textContent = mode;
+            updateTimerDisplay();
+            if (isRunning) {
+                pauseTimer();
+            }
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            isRunning = true;
+            document.getElementById('startBtn').textContent = 'Pause';
+            document.getElementById('startBtn').className = 'timer-btn pause';
+            
+            timerInterval = setInterval(() => {
+                if (currentTime > 0) {
+                    currentTime--;
+                    updateTimerDisplay();
+                    
+                    // Update study time stats every minute for focus sessions
+                    if (currentMode === 'Focus Time' || currentMode === 'Deep Work') {
+                        if (currentTime % 60 === 0) {
+                            stats.studyTime++;
+                            updateStatsDisplay();
+                            saveData();
+                        }
+                    }
+                } else {
+                    // Timer completed
+                    pauseTimer();
+                    showNotification();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').className = 'timer-btn start';
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            setTimer(25, 'Focus Time');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = display;
+        }
+
+        function showNotification() {
+            // Simple browser notification
+            if (Notification.permission === 'granted') {
+                new Notification('Student Buddy', {
+                    body: `${currentMode} session completed!`,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
+                });
+            }
+        }
+
+        // Notes functionality
+        function setupNotesCounter() {
+            const notesArea = document.getElementById('notesArea');
+            const notesCount = document.getElementById('notesCount');
+            
+            notesArea.addEventListener('input', function() {
+                const charCount = this.value.length;
+                notesCount.textContent = `${charCount} characters`;
+                
+                stats.noteCount = charCount;
+                updateStatsDisplay();
+                saveData();
+            });
+            
+            // Load saved notes
+            notesArea.value = localStorage.getItem('studentBuddyNotes') || '';
+            notesArea.dispatchEvent(new Event('input'));
+            
+            // Auto-save notes
+            notesArea.addEventListener('blur', function() {
+                localStorage.setItem('studentBuddyNotes', this.value);
+            });
+        }
+
+        // Stats functionality
+        function updateStatsDisplay() {
+            document.getElementById('tasksCompleted').textContent = stats.tasksCompleted;
+            document.getElementById('studyTime').textContent = stats.studyTime;
+            document.getElementById('noteCount').textContent = stats.noteCount;
+            
+            // Update progress bar
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+            const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+            document.getElementById('taskProgress').style.width = `${progress}%`;
+        }
+
+        // Data persistence
+        function saveData() {
+            const data = {
+                tasks: tasks,
+                stats: stats
+            };
+            localStorage.setItem('studentBuddyData', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('studentBuddyData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                tasks = data.tasks || [];
+                stats = data.stats || { tasksCompleted: 0, studyTime: 0, noteCount: 0 };
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.target.id === 'taskInput' && e.key === 'Enter') {
+                addTask();
+            }
+            if (e.target.id === 'customSiteInput' && e.key === 'Enter') {
+                addCustomSite();
+            }
+        });
+
+        // Check blocking status periodically
+        setInterval(checkBlockingStatus, 30000); // Check every 30 seconds
+
+        // Request notification permission
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    </script>
 </body>
 </html>
